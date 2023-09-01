@@ -1,0 +1,27 @@
+{
+  "name": "Bank-acount-flutter",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "dev": "node dist/app.js",
+    "start": "nodemon dist/app.js",
+    "compile": "tsc -w"
+  },
+  "devDependencies": {
+    "@types/cookie-parser": "^1.4.3",
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.17",
+    "@types/morgan": "^1.9.5",
+    "@types/node": "^20.5.7"
+  },
+  "dependencies": {
+    "@types/http-errors": "^2.0.1",
+    "cookie-parser": "^1.4.6",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "http-errors": "^2.0.0",
+    "morgan": "^1.10.0",
+    "nodemon": "^3.0.1",
+    "typescript": "^5.2.2"
+  }
+}
