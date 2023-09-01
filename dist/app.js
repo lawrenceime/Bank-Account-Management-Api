@@ -15,6 +15,9 @@ app.use((0, morgan_1.default)('dev'));
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
 app.use('/users', userRoutes_1.default);
+app.use('/', (req, res) => {
+    res.send('welcome to the bank');
+});
 app.listen(3060, () => {
     console.log(`App is paying attention on Port ${3060}`);
 });
