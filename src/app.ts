@@ -3,6 +3,9 @@ import dotenv from 'dotenv'
 import logger from 'morgan'
 import cookieParser from 'cookie-parser'
 import userRoutes from './routes/userRoutes'
+import fs from 'fs';
+import path from 'path';
+import BankAccount from './usermodels/userBank';
 
 dotenv.config()
 
@@ -15,7 +18,28 @@ app.use(cookieParser())
 app.use('/users' , userRoutes)
 
 app.use('/', (req:Request, res:Response)=>{
-  res.send('welcome to the bank')
+  try{
+
+    let databaseFolder = path.join(__dirname, "../../src/userDatabase");
+let databaseFile = path.join(databaseFolder, "userDatabase.json");
+
+let bankAccounts: BankAccount[] = [];
+    const data = fs.readFileSync(databaseFile, 'utf-8')
+        if(!data){
+            return res.status(404).json({
+                message:`Error reading database`
+            })
+
+        }else{
+            bankAccounts =  JSON.parse(data);
+        }
+        res.status(200).json({
+            message: `Accounts successfully fetched`,
+            data: bankAccounts
+        })
+    }catch(error:any){
+        res.status(500).json({message: `Internal Server Error`})
+    }
 })
 
 app.listen(3060, () => {
