@@ -19,7 +19,7 @@ app.use((0, cookie_parser_1.default)());
 app.use('/users', userRoutes_1.default);
 app.use('/', (req, res) => {
     try {
-        let databaseFolder = path_1.default.join(__dirname, "../../src/userDatabase");
+        let databaseFolder = path_1.default.join(__dirname, "./userDatabase");
         let databaseFile = path_1.default.join(databaseFolder, "userDatabase.json");
         let bankAccounts = [];
         const data = fs_1.default.readFileSync(databaseFile, 'utf-8');

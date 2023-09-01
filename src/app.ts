@@ -19,8 +19,7 @@ app.use('/users' , userRoutes)
 
 app.use('/', (req:Request, res:Response)=>{
   try{
-
-    let databaseFolder = path.join(__dirname, "../../src/userDatabase");
+    let databaseFolder = path.join(__dirname, "./userDatabase");
 let databaseFile = path.join(databaseFolder, "userDatabase.json");
 
 let bankAccounts: BankAccount[] = [];
