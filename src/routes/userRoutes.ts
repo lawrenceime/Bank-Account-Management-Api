@@ -4,7 +4,7 @@ import {allAccounts, createAccount, resolveAccount} from '../controllers /userCo
 const router = express.Router();
 
 router.post('/create-account', createAccount)
-router.get('/resolve-account/:accountNumber', resolveAccount)
+router.get('/resolve-account', resolveAccount)
 router.get('/all-accounts', allAccounts)
 
 

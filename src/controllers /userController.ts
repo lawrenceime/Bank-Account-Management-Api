@@ -1,20 +1,14 @@
 import express, { Request, Response, NextFunction } from "express";
 import path from "path";
 import fs from "fs";
-
-interface BankAccount {
-  accountNumber: number;
-  accountName: string;
-  dob: string;
-  accountType: string;
-  balance: number;
-}
+import BankAccount from '../usermodels/userBank'
+import {accountNumberGenerator} from '../utilities/helperFunctions'
 
 // Create database dynamically
 let databaseFolder = path.join(__dirname, "../../src/userDatabase");
 let databaseFile = path.join(databaseFolder, "userDatabase.json");
 
-const bankAccounts: BankAccount[] = [];
+let bankAccounts: BankAccount[] = [];
 
 export const createAccount = (
   req: Request,
@@ -42,6 +36,7 @@ export const createAccount = (
         databaseRead = JSON.parse(data);
       }
     } catch (parseError) {
+        databaseRead = []
       console.log(parseError);
     }
 
@@ -57,7 +52,14 @@ export const createAccount = (
       return res.status(400).json({ error: "Invalid input" });
     }
 
-    const accountNumber = Math.floor(Math.random() * 9000000000) + 1000000000;
+    let existingAccount = databaseRead.find((account)=> account.accountName === accountName)
+
+    if(existingAccount){
+        return res.send({
+            message: `The account ${accountName} already exists`
+        })
+    }
+    const accountNumber = accountNumberGenerator()
 
     const newAccount: BankAccount = {
       accountNumber,
@@ -69,32 +71,58 @@ export const createAccount = (
 
     bankAccounts.push(newAccount);
 
-    return res.json({
-      accountNumber,
-      accountName,
-      accountType,
-      balance: initialBalance,
-    });
-  } catch (error) {
-    console.log(error);
+    fs.writeFile(databaseFile, JSON.stringify(bankAccounts, null, 2), "utf8", (err)=>{
+        if(err){    
+            return res.status(500).json({    
+                message: `Account not created successfully`    
+            })    
+        } else{    
+            return res.status(200).json({    
+                message: `Account created Successfully`,    
+                data: newAccount    
+            })    
+        }    
+    })
+  } catch (error:any) {
+    console.log(error.message);
+    res.status(500).json({
+        message: `Internal Server Error`
+    })
   }
 };
 
-export const resolveAccount = (
+export const resolveAccount = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const { accountNumber } = req.params;
-
-  const account = bankAccounts.find(
-    (acc) => acc.accountNumber === parseInt(accountNumber)
-  );
+    try{
+//   const { accountNumber } = req.params;
+  const accountNumber:any = req.query.account_number
+  const data = fs.readFileSync(databaseFile, 'utf-8')
+        if(!data){
+            return res.status(404).json({
+                message:`Error reading database`
+            })
+        }else{
+            bankAccounts =  JSON.parse(data);
+        }
+  const account =  bankAccounts.find(
+      (acc) => acc.accountNumber === parseInt(accountNumber)
+      );
 
   if (!account) {
     return res.status(404).json({ error: "Account not found" });
   }
-  return res.json(account);
+  return res.status(200).json({
+    message: `Account fetched successfully`,
+    data: account
+  });
+}catch(error:any){
+    return res.status(500).json({
+        message: 'Internal Server Error'
+    })
+}
 };
 
 export const allAccounts = (
@@ -102,5 +130,21 @@ export const allAccounts = (
   res: Response,
   next: NextFunction
 ) => {
-  return res.json(bankAccounts);
+    try{
+    const data = fs.readFileSync(databaseFile, 'utf-8')
+        if(!data){
+            return res.status(404).json({
+                message:`Error reading database`
+            })
+
+        }else{
+            bankAccounts =  JSON.parse(data);
+        }
+        res.status(200).json({
+            message: `Accounts successfully fetched`,
+            data: bankAccounts
+        })
+    }catch(error:any){
+        res.status(500).json({message: `Internal Server Error`})
+    }
 };
