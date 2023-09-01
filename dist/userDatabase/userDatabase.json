@@ -1,0 +1,16 @@
+[
+  {
+    "accountNumber": 6136693329,
+    "accountName": "Timothy Amanam",
+    "dob": "21-10-2002",
+    "accountType": "Savings",
+    "balance": 5000
+  },
+  {
+    "accountNumber": 8384630102,
+    "accountName": "Paul Anthony",
+    "dob": "21-10-2002",
+    "accountType": "Savings",
+    "balance": 5000
+  }
+]
